@@ -13,9 +13,9 @@
             height: 100vh;
             margin: 0;
             background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
-            overflow: auto;
+            overflow: hidden; /* Prevent body scrolling */
         }
-
+        
         .container {
             text-align: center;
             background-color: #ffffff;
@@ -24,21 +24,22 @@
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
             width: 90%;
             max-width: 600px;
+            max-height: 90vh; /* Limit container height */
+            overflow-y: auto; /* Enable vertical scrolling */
             margin: 20px;
-            overflow: auto;
         }
-
+        
         h1 {
             color: #333;
             margin-bottom: 20px;
             font-size: 26px;
             font-weight: 700;
         }
-
+        
         input[type="file"] {
             display: none;
         }
-
+        
         #upload-label {
             display: inline-block;
             background-color: #007bff;
@@ -50,11 +51,11 @@
             transition: background-color 0.3s ease;
             margin: 10px;
         }
-
+        
         #upload-label:hover {
             background-color: #0056b3;
         }
-
+        
         #camera-button {
             background-color: #28a745;
             color: #fff;
@@ -65,11 +66,11 @@
             transition: background-color 0.3s ease;
             margin: 10px;
         }
-
+        
         #camera-button:hover {
             background-color: #1e7e34;
         }
-
+        
         #convert {
             background-color: #007bff;
             color: #ffffff;
@@ -81,15 +82,15 @@
             transition: background-color 0.3s ease;
             margin: 10px;
         }
-
+        
         #convert:hover {
             background-color: #0056b3;
         }
-
+        
         #output {
             margin-top: 20px;
         }
-
+        
         #image {
             max-width: 100%;
             height: auto;
@@ -98,7 +99,7 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             margin-bottom: 15px;
         }
-
+        
         #text {
             color: #444;
             font-size: 18px;
@@ -110,13 +111,14 @@
             border-radius: 8px;
             background-color: #fafafa;
         }
-
+        
         #typing-indicator {
             display: none;
             font-style: italic;
             color: #888;
             margin-top: 10px;
         }
+
     </style>
 </head>
 <body>
