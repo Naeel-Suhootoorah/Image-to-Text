@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Text Converter</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            overflow: auto;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 600px;
+            margin: 20px;
+            overflow: auto;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 26px;
+            font-weight: 700;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        #upload-label {
+            display: inline-block;
+            background-color: #007bff;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+            margin: 10px;
+        }
+
+        #upload-label:hover {
+            background-color: #0056b3;
+        }
+
+        #camera-button {
+            background-color: #28a745;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+            margin: 10px;
+        }
+
+        #camera-button:hover {
+            background-color: #1e7e34;
+        }
+
+        #convert {
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+            margin: 10px;
+        }
+
+        #convert:hover {
+            background-color: #0056b3;
+        }
+
+        #output {
+            margin-top: 20px;
+        }
+
+        #image {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+        }
+
+        #text {
+            color: #444;
+            font-size: 18px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #fafafa;
+        }
+
+        #typing-indicator {
+            display: none;
+            font-style: italic;
+            color: #888;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Image Text Converter</h1>
+        <input type="file" id="upload" accept="image/*">
+        <button id="camera-button" onclick="takePhoto()">Take Photo</button>
+        <div id="output">
+            <img id="image" src="" alt="Uploaded Image">
+            <p id="text">Extracted text will appear here...</p>
+            <p id="typing-indicator">Processing...</p>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.0/dist/tesseract.min.js"></script>
+    <script>
+        document.getElementById('convert').addEventListener('click', () => {
+            const fileInput = document.getElementById('upload');
+            const file = fileInput.files[0];
+            const typingIndicator = document.getElementById('typing-indicator');
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = document.getElementById('image');
+                    img.src = event.target.result;
+
+                    typingIndicator.style.display = 'block'; // Show typing indicator
+
+                    Tesseract.recognize(
+                        event.target.result,
+                        'eng',
+                        {
+                            logger: info => console.log(info)
+                        }
+                    ).then(({ data: { text } }) => {
+                        document.getElementById('text').textContent = text;
+                        typingIndicator.style.display = 'none'; // Hide typing indicator
+                    }).catch(err => {
+                        console.error(err);
+                        document.getElementById('text').textContent = 'Error extracting text.';
+                        typingIndicator.style.display = 'none'; // Hide typing indicator
+                    });
+                };
+                reader.readAsDataURL(file);
+            } else {
+                document.getElementById('text').textContent = 'Please upload an image first.';
+                typingIndicator.style.display = 'none'; // Hide typing indicator if no file
+            }
+        });
+
+        function takePhoto() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.style.display = 'none';
+            input.onchange = () => {
+                const file = input.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const img = document.getElementById('image');
+                        img.src = event.target.result;
+
+                        document.getElementById('text').textContent = 'Extracting text...';
+                        document.getElementById('typing-indicator').style.display = 'block'; // Show typing indicator
+
+                        Tesseract.recognize(
+                            event.target.result,
+                            'eng',
+                            {
+                                logger: info => console.log(info)
+                            }
+                        ).then(({ data: { text } }) => {
+                            document.getElementById('text').textContent = text;
+                            document.getElementById('typing-indicator').style.display = 'none'; // Hide typing indicator
+                        }).catch(err => {
+                            console.error(err);
+                            document.getElementById('text').textContent = 'Error extracting text.';
+                            document.getElementById('typing-indicator').style.display = 'none'; // Hide typing indicator
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            input.click();
+        }
+    </script>
+</body>
+</html>
